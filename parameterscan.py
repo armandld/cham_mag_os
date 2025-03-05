@@ -7,15 +7,14 @@ import os
 # Parameters
 # TODO adapt to what you need (folder path executable input filename)
 executable = 'Ex2_2025_student'  # Name of the executable (NB: .exe extension is required on Windows)
-repertoire = r"/home/chatelin/Desktop/MyFiles/Aiguille_aimantee_physNum/"
+repertoire = r"/Users/Sayu/Desktop/cham_mag_os"
 os.chdir(repertoire)
 
 
-'global_params = {}
-input_filename = 'configuration.in'  # Name of the input file
+input_filename = 'configuration.in.example'  # Name of the input file
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
-
+"""
 def read_config(filename):
     params = {}
     with open(filename, 'r') as f:
@@ -27,31 +26,10 @@ def read_config(filename):
     return params
 
 global_params = read_config(input_filename)
+"""
 
-# Extraction des paramètres
-Omega = global_params.get('Omega', 1.0)
-kappa = global_params.get('kappa', 0.0)
-m = global_params.get('m', 0.075)
-L = global_params.get('L', 0.08)
-B1 = global_params.get('B1', 0.0)
-B0 = global_params.get('B0', 0.01)
-mu = global_params.get('mu', 0.2)
-theta0 = global_params.get('theta0', 1e-6)
-thetadot0 = global_params.get('thetadot0', 0.0)
-N_period = global_params.get('Nperiod', 3)
-
-
-'Omega = 1.0
-m = 0.075
-L = 0.08
-B0 = 0.01
-mu = 0.2
-theta0 = 1e-6
-thetadot0 = 0
-N_period = 3
-N_excit = 100
-
-
+Omega = 1
+N_periods
 T0 = 2 * np.pi / Omega  # Période théorique
 
 tfin = N_period * T0
@@ -119,12 +97,6 @@ plt.legend()
 plt.title("Convergence de l'erreur en fonction de Δt")
 
 plt.show()
-
-
-
-
-
-
 
 
 
