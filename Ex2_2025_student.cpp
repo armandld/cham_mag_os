@@ -27,8 +27,8 @@ private:
   {
     if((!force && last>=sampling) || (force && last!=1))
     {
-      double emec = 0.0; // TODO: Evaluer l'energie mecanique
-      double pnc  = 0.0; // TODO: Evaluer la puissance des forces non conservatives
+      double emec = m*L*L*thetadot*thetadot/24.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot); // TODO: Evaluer l'energie mecanique
+      double pnc  = mu*B1*sin(Omega*t)*sin(theta)*thetadot-kappa*pow(thetadot,2); // TODO: Evaluer la puissance des forces non conservatives
 
       *outputFile << t << " " << theta << " " << thetadot << " " << emec << " " << pnc << endl;
       last = 1;
@@ -45,8 +45,8 @@ private:
   {
     valarray<double> acc = valarray<double>(2);
 
-    acc[0] = 0.0; // angular acceleration depending on x and t only
-    acc[1] = 0.0; // angular acceleration depending on v only
+    acc[0] = -12.0/(m*L*L)*mu*sin(theta)*(B0+B1*sin(Omega*t)); // angular acceleration depending on x and t only
+    acc[1] = -12.0/(m*L*L)*kappa*thetadot; // angular acceleration depending on v only
 
     return acc;
   }
@@ -55,17 +55,25 @@ private:
     void step()
   {
     // TODO: implement the extended Verlet scheme Section 2.7.4
-    valarray<double> a = acceleration(theta, thetadot, t);
-    theta        = 0.0;
-    thetadot     = 0.0;
-
+    valarray<double> a_start = acceleration(theta, thetadot, t);
+    
+    
+    theta = theta+thetadot*dt+(a_start[0]+a_start[1])*dt*dt/2;
+    
+    double thetadot_inter = thetadot+(a_start[0]+a_start[1])*dt/2;
+    
+    valarray<double> a_inter = acceleration(theta, thetadot_inter, t);
+    valarray<double> a_end = acceleration(theta, thetadot, t);
+    
+    thetadot = thetadot+(a_start[0]+a_end[0])*dt/2+a_inter[1]*dt;
+    
   }
 
 
 public:
   Exercice2(int argc, char* argv[])
   {
-    const double pi=3.1415926535897932384626433832795028841971e0;
+    constexpr double pi=3.1415926535897932384626433832795028841971e0;
     string inputPath("configuration.in"); // Fichier d'input par defaut
     if(argc>1) // Fichier d'input specifie par l'utilisateur ("./Exercice2 config_perso.in")
       inputPath = argv[1];
@@ -97,15 +105,17 @@ public:
     
     // TODO: implement the expression for tFin, dt
 
+	double period = 2.0*pi/Omega;
+
     if(N_excit>0){
       // simulate N_excit periods of excitation
-      tFin = 0.0;
-      dt   = 0.0;
+      tFin = N_excit*period;
+      dt   = period/nsteps_per;
     }
     else{
       // simulate Nperiod periods of the eigenmode
-      tFin = 0.0;
-      dt   = 0.0;
+      tFin = Nperiod*period;
+      dt   = period/nsteps_per;
     } 
     cout << "final time is "<<"  "<< tFin << endl; 
 
