@@ -15,7 +15,7 @@ os.chdir(repertoire)
 input_filename = 'configuration.in'  # Name of the input file
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
-'''
+
 def read_config(filename):
     params = {}
     with open(filename, 'r') as f:
@@ -39,7 +39,7 @@ mu = global_params.get('mu', 0.2)
 theta0 = global_params.get('theta0', 1e-6)
 thetadot0 = global_params.get('thetadot0', 0.0)
 N_period = global_params.get('Nperiod', 3)
-'''
+
 
 'Omega = 1.0
 m = 0.075

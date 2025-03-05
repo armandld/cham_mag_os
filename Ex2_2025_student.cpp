@@ -41,7 +41,7 @@ private:
 
     // TODO define angular acceleration functions and separate contributions
     // for a[0] = function of (x,t), a[1] = function of (v)
-  valarray<double> acceleration(double x, double v, double t_)
+  valarray<double> acceleration(double const& x, double const& v, double const& t_)
   {
     valarray<double> acc = valarray<double>(2);
 
