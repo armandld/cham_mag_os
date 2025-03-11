@@ -11,28 +11,70 @@ repertoire = r"/Users/Sayu/Desktop/cham_mag_os"
 os.chdir(repertoire)
 
 
+CONFIG_FILE = os.path.join(os.path.dirname(__file__), "configuration.in.example")
+
 input_filename = 'configuration.in.example'  # Name of the input file
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
-"""
-def read_config(filename):
-    params = {}
-    with open(filename, 'r') as f:
-        for line in f:
-            line = line.split('//')[0].strip()
-            if '=' in line:
-                key, value = line.split('=')
-                params[key.strip()] = float(value.strip()) if '.' in value or 'e' in value else int(value.strip())
-    return params
 
-global_params = read_config(input_filename)
-"""
+def lire_configuration():
+    config_path = os.path.join(os.path.dirname(__file__), "configuration.in.example")
+    configuration = {}
+    
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Le fichier {config_path} n'existe pas.")
+    
+    with open(config_path, "r", encoding="utf-8") as fichier:
+        for ligne in fichier:
+            ligne = ligne.strip()
+            if ligne and "=" in ligne and not ligne.startswith("#"):
+                cle, valeur = ligne.split("=", 1)
+                configuration[cle.strip()] = valeur.strip()
+    
+    return configuration
 
-Omega = 1
-N_periods
+def ecrire_configuration(nouvelles_valeurs):
+    """Écrit les nouvelles valeurs dans le fichier de configuration."""
+    if not os.path.exists(CONFIG_FILE):
+        raise FileNotFoundError(f"Le fichier {CONFIG_FILE} n'existe pas.")
+
+    lignes_modifiees = []
+    
+    with open(CONFIG_FILE, "r", encoding="utf-8") as fichier:
+        for ligne in fichier:
+            ligne_strippée = ligne.strip()
+            if ligne_strippée and "=" in ligne_strippée and not ligne_strippée.startswith("#"):
+                cle, _ = ligne_strippée.split("=", 1)
+                cle = cle.strip()
+                if cle in nouvelles_valeurs:
+                    ligne = f"{cle} = {nouvelles_valeurs[cle]}\n"
+            lignes_modifiees.append(ligne)
+
+    with open(CONFIG_FILE, "w", encoding="utf-8") as fichier:
+        fichier.writelines(lignes_modifiees)
+
+
+valeurs = lire_configuration()
+
+Omega = float(valeurs.get("Omega"))
+kappa = float(valeurs.get("kappa"))
+m = float(valeurs.get("m"))
+L = float(valeurs.get("L"))
+B1 = float(valeurs.get("B1"))
+B0 = float(valeurs.get("B0"))
+mu = float(valeurs.get("mu"))
+theta0 = float(valeurs.get("theta0"))
+thetadot0 = float(valeurs.get("thetadot0"))
+sampling = float(valeurs.get("sampling"))
+N_excit = float(valeurs.get("N_excit"))
+Nperiod = float(valeurs.get("Nperiod"))
+nsteps = float(valeurs.get("nsteps"))
+
 T0 = 2 * np.pi / Omega  # Période théorique
 
-tfin = N_period * T0
+tfin = Nperiod * T0
+
+
 paramstr = 'nsteps'  # Paramètre à scanner
 param = nsteps_values
 
