@@ -17,6 +17,7 @@ private:
   double B0, B1;
   double mu;
   double om_0, om_1, nu, Ig;
+  double C,alpha,beta; 		//PARTIE FACULTATIVE stabilisation autour de pi
 
   int N_excit, nsteps_per, Nperiod;
   int sampling;
@@ -28,7 +29,7 @@ private:
     if((!force && last>=sampling) || (force && last!=1))
     {
 	  Ig = m*L*L/12.0;
-      double emec = Ig*thetadot*thetadot/2.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot); // TODO: Evaluer l'energie mecanique
+      double emec = Ig*thetadot*thetadot/2.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot)-C*(theta-M_PI)+alpha*cos(beta*t); // TODO: Evaluer l'energie mecanique
       double pnc  = mu*B1*sin(Omega*t)*sin(theta)*thetadot-kappa*pow(thetadot,2); // TODO: Evaluer la puissance des forces non conservatives
 
       *outputFile << t << " " << theta << " " << thetadot << " " << emec << " " << pnc << endl;
@@ -97,6 +98,9 @@ public:
     N_excit  = configFile.get<int>("N_excit");      // number of periods of excitation
     Nperiod  = configFile.get<int>("Nperiod");      // number of periods of oscillation of the eigenmode
     nsteps_per= configFile.get<int>("nsteps");      // number of time step per period
+    C        = configFile.get<int>("C"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
+    alpha    = configFile.get<int>("alpha"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
+    beta     = configFile.get<int>("beta"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
 
     // Ouverture du fichier de sortie
     outputFile = new ofstream(configFile.get<string>("output").c_str());
