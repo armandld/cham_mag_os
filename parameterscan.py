@@ -67,6 +67,7 @@ nsteps = 0.0
 C = 0.0
 alpha = 0.0
 beta = 0.0
+gamma = 0.0
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
 
@@ -90,7 +91,7 @@ def actualise_valeur():
     C = float(valeurs.get("C"))
     alpha = float(valeurs.get("alpha"))
     beta = float(valeurs.get("beta"))
-
+    gamma = float(valeurs.get("gamma"))
 
 def ecrire_valeur(nom,valeur):
     global valeurs
@@ -398,6 +399,7 @@ ecrire_valeur("theta0",np.pi)
 ecrire_valeur("C", 50)
 ecrire_valeur("alpha",0) 'Tres bonne stabilisation à e-12 de précision'
 ecrire_valeur("beta", 0)
+ecrire_valeur("gamma", 0)
 
 actualise_valeur()
 
