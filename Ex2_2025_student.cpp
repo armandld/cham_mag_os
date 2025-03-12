@@ -29,7 +29,7 @@ private:
     if((!force && last>=sampling) || (force && last!=1))
     {
 	  Ig = m*L*L/12.0;
-      double emec = Ig*thetadot*thetadot/2.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot)-C*(theta-M_PI)+alpha*cos(beta*t); // TODO: Evaluer l'energie mecanique
+      double emec = Ig*thetadot*thetadot/2.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot); // TODO: Evaluer l'energie mecanique
       double pnc  = mu*B1*sin(Omega*t)*sin(theta)*thetadot-kappa*pow(thetadot,2); // TODO: Evaluer la puissance des forces non conservatives
 
       *outputFile << t << " " << theta << " " << thetadot << " " << emec << " " << pnc << endl;
@@ -47,7 +47,7 @@ private:
   {
     valarray<double> acc = valarray<double>(2);
 
-    acc[0] = -mu*sin(theta)*(B0+B1*sin(Omega*t))/Ig; // angular acceleration depending on x and t only
+    acc[0] = -mu*sin(theta)*(B0+B1*sin(Omega*t))/Ig-C*(theta-M_PI)+alpha*cos(beta*t); // angular acceleration depending on x and t only, bonus part added
     acc[1] = -kappa*thetadot/Ig; // angular acceleration depending on v only
 
     return acc;
