@@ -421,4 +421,6 @@ plt.title("Stabilisation non-linéaire de θeq = π")
 plt.grid()
 plt.show()
 
-plt.show()
+ecrire_valeur("C", 0)
+
+actualise_valeur()
