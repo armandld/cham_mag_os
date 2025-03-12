@@ -73,7 +73,7 @@ nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de p
 valeurs = lire_configuration()
 
 def actualise_valeur():
-    global Omega, kappa, m, L, B1, B0, mu, theta0, thetadot0, sampling, N_excit, Nperiod, nsteps
+    global Omega, kappa, m, L, B1, B0, mu, theta0, thetadot0, sampling, N_excit, Nperiod, nsteps, C, alpha, beta
     Omega = float(valeurs.get("Omega"))
     kappa = float(valeurs.get("kappa"))
     m = float(valeurs.get("m"))
@@ -98,10 +98,10 @@ def ecrire_valeur(nom,valeur):
     ecrire_configuration(valeurs)
     actualise_valeur()
 
-
-
-
-# Question 1
+def lancer_simulation(theta0, output_file):
+    ecrire_configuration({"theta0": theta0})
+    cmd = f"./{executable} {input_filename} output={output_file}"
+    subprocess.run(cmd, shell=True)
 
 paramstr = 'nsteps'  # Paramètre à scanner
 param = nsteps_values
@@ -128,6 +128,8 @@ phi = np.pi/2
 
 if (thetadot0 != 0):
 	phi = np.arctan(-theta0/thetadot0*omega_0)
+
+
 
 '''
 # Question 1
@@ -157,9 +159,9 @@ for i, nsteps in enumerate(param):
 # Tracé de l'étude de convergence
 plt.figure()
 dt_values = T0 / np.array(nsteps_values)
-plt.loglog(dt_values, errors, marker='o', linestyle='-', label="Erreur numérique")
+plt.loglog(dt_values, errors, marker='v',markersize = 3, color = "black", linestyle='-')
 plt.xlabel("Δt [s]")
-plt.ylabel("Erreur δ")
+plt.ylabel("Erreur δ [rad/s]")
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.legend()
 plt.title("Convergence de l'erreur en fonction de Δt")
@@ -168,12 +170,14 @@ n_order = 2
 
 plt.figure()
 dt_values = T0 / np.array(nsteps_values)
-plt.plot(dt_values**n_order, errors, marker='o', linestyle='-', label="Erreur numérique")
+plt.plot(dt_values**n_order, errors, marker='v',markersize = 3, color = "black", linestyle='-')
 plt.xlabel("Δt [s]")
-plt.ylabel("Erreur δ")
+plt.ylabel("Erreur δ [rad/s]")
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.legend()
 plt.title("Convergence de l'erreur en fonction de Δt")
+
+plt.show()
 
 
 # Question 2
@@ -185,7 +189,7 @@ ecrire_valeur("N_excit",100)
 ecrire_valeur("theta0",1e-3)
 ecrire_valeur("thetadot0",0)
 
-nsteps_values = [100,500,2000,5000]
+nsteps_values = [5000]
 
 errors = []
 
@@ -207,73 +211,45 @@ for i, nsteps in enumerate(nsteps_values):
 
     # Tracé de θ(t)
     plt.figure()
-    plt.plot(t, theta, linestyle='dashed')
+    plt.plot(t, theta,color = "black")
     plt.xlabel('Temps [s]')
-    plt.ylabel('$\Theta$ [rad]')
+    plt.ylabel('$\\theta$ [rad]')
     plt.legend()
-    plt.title(f'Évolution de θ(t) pour nsteps={nsteps}')
+    plt.title(f"Évolution de $\\theta (t)$ pour nsteps={nsteps}")
     plt.grid()
     
 
     # Tracé de l'orbite dans l’espace de phase
     plt.figure()
-    plt.plot(theta, thetadot, label='Simulation')
-    plt.xlabel('$\Theta$ [rad]')
-    plt.ylabel('$\dot{\Theta}$ [rad/s]')
+    plt.plot(theta, thetadot,color = "black")
+    plt.xlabel('$\\theta$ [rad]')
+    plt.ylabel('$\\dot{{\\theta}}$ [rad/s]')
     plt.legend()
-    plt.title(f'Espace de phase (θ, ˙θ) pour nsteps={nsteps}')
+    plt.title(f"Espace de phase ($\\theta$,$\\dot{{\\theta}}$) pour nsteps={nsteps}")
     plt.grid()
     
 
     # Tracé de l'énergie mécanique Emec(t)
     plt.figure()
-    plt.plot(t, Emec, label='Emec')
+    plt.plot(t, Emec,color = "black")
     plt.xlabel('Temps [s]')
     plt.ylabel('Énergie mécanique [J]')
     plt.legend()
-    plt.title(f'Évolution de l\'énergie mécanique pour nsteps={nsteps}')
+    plt.title(f"Évolution de l\'énergie mécanique pour nsteps={nsteps}")
     plt.grid()
 
     # Comparaison dEmec/dt avec Pnc(t)
     dEmec_dt = m*L*L*thetadot*np.gradient(thetadot,t)/12-mu*Omega*B1*np.cos(Omega*t)+kappa*np.gradient(thetadot,t)
     plt.figure()
-    plt.plot(t, dEmec_dt, label='dEmec/dt')
+    plt.plot(t, dEmec_dt, label='dE$_{mec}$/dt',color = "black")
     plt.plot(t, Pnc, label='Pnc')
     plt.xlabel('Temps [s]')
     plt.ylabel('Puissance [W]')
     plt.legend()
-    plt.title(f'Comparaison dEmec/dt et Pnc(t) pour nsteps={nsteps}')
+    plt.title(f"Comparaison $\\frac{{\\text{{d}}E_{{mec}}}}{{\\text{{d}}t}}$ et $P_{{nc}}(t)$ pour nsteps={nsteps}")
     plt.grid()
 
-    # Solution analytique
-    theta_a = A*np.sin(np.sqrt(12*B0*mu/(m*L*L))*t+phi)
-    thetadot_a = A*np.sqrt(12*B0*mu/(m*L*L))*np.cos(np.sqrt(12*B0*mu/(m*L*L))*t+phi)
-
-    # Calcul de l'erreur à tfin
-    delta = np.sqrt(omega_0**2 * (theta[-1] - theta_a[-1])**2 + (thetadot[-1] - thetadot_a[-1])**2)
-    errors.append(delta)
-
-# Tracé de l'étude de convergence
-plt.figure()
-dt_values = T0 / np.array(nsteps_values)
-plt.loglog(dt_values, errors, marker='o', linestyle='-', label="Erreur numérique")
-plt.xlabel("Δt [s]")
-plt.ylabel("Erreur δ")
-plt.grid(True, linestyle="--", alpha=0.3)
-plt.legend()
-plt.title("Convergence de l'erreur en fonction de Δt")
-
-n_order = 2
-
-plt.figure()
-dt_values = T0 / np.array(nsteps_values)
-plt.plot(dt_values**n_order, errors, marker='o', linestyle='-', label="Erreur numérique")
-plt.xlabel("Δt [s]")
-plt.ylabel("Erreur δ")
-plt.grid(True, linestyle="--", alpha=0.3)
-plt.legend()
-plt.title("Convergence de l'erreur en fonction de Δt")
-
+plt.show()
 
 # Question 3
 
@@ -281,72 +257,92 @@ ecrire_valeur("Omega",2*omega_0)
 ecrire_valeur("B1",0.002)
 ecrire_valeur("kappa",0)
 ecrire_valeur("N_excit",10000)
-ecrire_valeur("theta0",1e-3)
-ecrire_valeur("thetadot0",0)
 
-nsteps_values = [10,20,50,100]
+nsteps_values = [10]
 
+theta0s = [0,1e-3,1e-1,0.5,1]
+thetadot0s = np.linspace(0,25,6)
 
-for i, nsteps in enumerate(nsteps_values):
-    couples_phase = []
-    output_file = f"{paramstr}={nsteps}.out"
-    outputs.append(output_file)
-    cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
-    print(cmd)
-    subprocess.run(cmd, shell=True)
-    print('Simulation terminée.')
+plt.figure()
+for theta in theta0s:
+    for thetadot in thetadot0s:
+        ecrire_valeur("theta0",theta)
+        ecrire_valeur("thetadot0",thetadot)
+        couples_phase= []
+        for i, nsteps in enumerate(nsteps_values):
+            couples_phase = []
+            output_file = f"{paramstr}={nsteps}.out"
+            outputs.append(output_file)
+            cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
+            print(cmd)
+            subprocess.run(cmd, shell=True)
+            print('Simulation terminée.')
 
-    # Chargement des données
-    data = np.loadtxt(output_file)
-    tfin = data[-1, 0]
-    for k in range(0,len(data[:,1]),nsteps):
-        k = int(k)
-        theta = ((data[k, 1]+np.pi) % (2*np.pi))-np.pi
-        thetadot = data[k, 2]
-        couples_phase.append([theta,thetadot])
+            # Chargement des données
+            data = np.loadtxt(output_file)
+            tfin = data[-1, 0]
+            for k in range(0,len(data[:,1]),nsteps):
+                theta = ((data[k, 1]+np.pi) % (2*np.pi))-np.pi
+                thetadot = data[k, 2]
+                couples_phase.append([theta,thetadot])
 
-    couples_phase = np.array(couples_phase)
+            couples_phase = np.array(couples_phase)
         # Tracé de la section de Poincaré
-    plt.figure()
-    plt.scatter(couples_phase[:,0], couples_phase[:,1], label='Simulation',s = 2)
-    plt.xlabel('$\Theta$ [rad]')
-    plt.ylabel('$\dot{\Theta}$ [rad/s]')
-    plt.legend()
-    plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
-    plt.grid()
 
-'''
+        plt.scatter(couples_phase[:,0], couples_phase[:,1],s = 0.5)
 
+plt.xlabel('$\Theta$ [rad]')
+plt.ylabel('$\dot{\Theta}$ [rad/s]')
+plt.legend()
+plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
+plt.grid()
+
+plt.show()
+
+
+# Question 4
+
+ecrire_valeur("Omega",2*omega_0)
+ecrire_valeur("B1",0.002)
+ecrire_valeur("kappa",0)
+ecrire_valeur("N_excit",10000)
+
+ecrire_valeur("nsteps",1000)
+
+ecrire_valeur("N_excit",100)
 
 # Simulation avec deux conditions initiales proches
-def lancer_simulation(theta0, output_file):
-    ecrire_configuration({"theta0": theta0})
-    cmd = f"./{executable} {input_filename} output={output_file}"
-    subprocess.run(cmd, shell=True)
 
-def partie_d(theta0):
-	lancer_simulation(theta0, "angle_a.out")
-	lancer_simulation(theta0+1e-6, "angle_b.out")
+ecrire_valeur("theta0",1)
+thetadot0s = [5,15] # 5 pas chaotique et 15 chaotique
 
-	data_a = np.loadtxt("angle_a.out")
-	data_b = np.loadtxt("angle_b.out")
+for thetadot in thetadot0s:
+    ecrire_valeur("thetadot0",thetadot) 
 
-	t = data_a[:, 0]
-	theta_a = data_a[:, 1]
-	thetadot_a = data_a[:, 2]
-	theta_b = data_b[:, 1]
-	thetadot_b = data_b[:, 2]
+    lancer_simulation(theta0, "angle_a.out")
+    lancer_simulation(theta0+1e-6, "angle_b.out")
 
-	# Calcul de la distance delta_ab
-	delta_ab = np.sqrt(omega_0**2 * (theta_b - theta_a)**2 + (thetadot_b - thetadot_a)**2)
+    data_a = np.loadtxt("angle_a.out")
+    data_b = np.loadtxt("angle_b.out")
 
-	# Tracé des résultats
-	plt.figure()
-	plt.plot(t, delta_ab)
-	plt.xlabel("Temps [s]")
-	plt.ylabel("Distance δab")
-	plt.title("Évolution de la distance entre trajectoires d'angles proches")
-	plt.grid()
+    t = data_a[:, 0]
+    theta_a = data_a[:, 1]
+    thetadot_a = data_a[:, 2]
+    theta_b = data_b[:, 1]
+    thetadot_b = data_b[:, 2]
+
+    # Calcul de la distance delta_ab
+    delta_ab = np.sqrt(omega_0**2 * (theta_b - theta_a)**2 + (thetadot_b - thetadot_a)**2)
+
+    # Tracé des résultats
+    plt.figure()
+    plt.plot(t, delta_ab,color = "black")
+    plt.xlabel("Temps [s]")
+    plt.ylabel("Distance δab")
+    plt.title("Évolution de la distance entre trajectoires d'angles proches")
+    plt.grid()
+
+plt.show()
 
 # Question 5
 
@@ -357,8 +353,8 @@ ecrire_valeur("B0",0.01)
 
 ecrire_valeur("N_excit",10000)
 
-ecrire_valeur("theta0",2)
-ecrire_valeur("thetadot0",2)
+ecrire_valeur("theta0",-1)
+ecrire_valeur("thetadot0",-8)
 
 nsteps_values = [100]
 
@@ -382,39 +378,48 @@ for i, nsteps in enumerate(nsteps_values):
     couples_phase = np.array(couples_phase)
         # Tracé de la section de Poincaré
     plt.figure()
-    plt.scatter(couples_phase[:,0], couples_phase[:,1], label='Simulation',s = 2)
+    plt.scatter(couples_phase[:,0], couples_phase[:,1],s = 2,color = "black")
     plt.xlabel('$\Theta$ [rad]')
     plt.ylabel('$\dot{\Theta}$ [rad/s]')
     plt.legend()
     plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
     plt.grid()
-
-
 plt.show()
 
+'''
 # Question Facultatif:
-	
-ecrire_valeur("theta0",np.pi)
+
+ecrire_valeur("Omega",2*omega_0)
+ecrire_valeur("B1",0.002)
+ecrire_valeur("B0",0.01)
+ecrire_valeur("kappa",0)
+ecrire_valeur("N_excit",1000)
+ecrire_valeur("nsteps",50)
+
+ecrire_valeur("theta0", np.pi)
+ecrire_valeur("thetadot0",0)
+
 ecrire_valeur("C", 50)
-ecrire_valeur("alpha",0) 'Tres bonne stabilisation à e-12 de précision'
+ecrire_valeur("alpha",0) #'Tres bonne stabilisation à e-12 de précision'
 ecrire_valeur("beta", 0)
 
-actualise_valeur()
+nsteps_values = [10,20,50,100]  # Nombre de pas par période
 
-lancer_simulation(np.pi, "stabilisation.out")
+for i in (nsteps_values):
+	ecrire_valeur("theta0",np.pi)
+	lancer_simulation(np.pi, "stabilisation.out")
 
-data_stab = np.loadtxt("stabilisation.out")
-t_stab = data_stab[:, 0]
-theta_stab = data_stab[:, 1]
+	data_stab = np.loadtxt("stabilisation.out")
+	t_stab = data_stab[:, 0]
+	theta_stab = data_stab[:, 1]
 
-plt.figure()
-plt.plot(t_stab, theta_stab)
-plt.xlabel("Temps [s]")
-plt.ylabel("θ [rad]")
-plt.title("Stabilisation non-linéaire de θeq = π")
-plt.grid()
+	plt.figure()
+	plt.plot(t_stab, theta_stab,color = "black")
+	plt.xlabel("Temps [s]")
+	plt.ylabel("θ [rad]")
+	plt.title(f"Stabilisation non-linéaire de θeq = π, nsteps={i}")
+	plt.grid()
+	
 plt.show()
 
-ecrire_valeur("C", 0)
 
-actualise_valeur()
