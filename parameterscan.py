@@ -64,6 +64,9 @@ sampling = 0.0
 N_excit = 0.0
 Nperiod = 0.0
 nsteps = 0.0
+C = 0.0
+alpha = 0.0
+beta = 0.0
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
 
@@ -84,6 +87,10 @@ def actualise_valeur():
     N_excit = float(valeurs.get("N_excit"))
     Nperiod = float(valeurs.get("Nperiod"))
     nsteps = float(valeurs.get("nsteps"))
+    C = float(valeurs.get("C"))
+    alpha = float(valeurs.get("alpha"))
+    beta = float(valeurs.get("beta"))
+
 
 def ecrire_valeur(nom,valeur):
     global valeurs
@@ -309,6 +316,38 @@ for i, nsteps in enumerate(nsteps_values):
     plt.grid()
 
 '''
+
+
+# Simulation avec deux conditions initiales proches
+def lancer_simulation(theta0, output_file):
+    ecrire_configuration({"theta0": theta0})
+    cmd = f"./{executable} {input_filename} output={output_file}"
+    subprocess.run(cmd, shell=True)
+
+def partie_d(theta0):
+	lancer_simulation(theta0, "angle_a.out")
+	lancer_simulation(theta0+1e-6, "angle_b.out")
+
+	data_a = np.loadtxt("angle_a.out")
+	data_b = np.loadtxt("angle_b.out")
+
+	t = data_a[:, 0]
+	theta_a = data_a[:, 1]
+	thetadot_a = data_a[:, 2]
+	theta_b = data_b[:, 1]
+	thetadot_b = data_b[:, 2]
+
+	# Calcul de la distance delta_ab
+	delta_ab = np.sqrt(omega_0**2 * (theta_b - theta_a)**2 + (thetadot_b - thetadot_a)**2)
+
+	# Tracé des résultats
+	plt.figure()
+	plt.plot(t, delta_ab)
+	plt.xlabel("Temps [s]")
+	plt.ylabel("Distance δab")
+	plt.title("Évolution de la distance entre trajectoires d'angles proches")
+	plt.grid()
+
 # Question 5
 
 ecrire_valeur("Omega",2*omega_0)
@@ -358,5 +397,28 @@ plt.ylabel('$\\dot{\\Theta}$ [rad/s]')
 plt.legend()
 plt.title(f'Sections de Poincaré pour différents $\\theta_0$ et $\\dot{{\\theta}}_0$')
 plt.grid()
+
+'Facultatif:'
+	
+ecrire_valeur("theta0",np.pi)
+ecrire_valeur("C", 50)
+ecrire_valeur("alpha",0) 'Tres bonne stabilisation à e-12 de précision'
+ecrire_valeur("beta", 0)
+
+actualise_valeur()
+
+lancer_simulation(np.pi, "stabilisation.out")
+
+data_stab = np.loadtxt("stabilisation.out")
+t_stab = data_stab[:, 0]
+theta_stab = data_stab[:, 1]
+
+plt.figure()
+plt.plot(t_stab, theta_stab)
+plt.xlabel("Temps [s]")
+plt.ylabel("θ [rad]")
+plt.title("Stabilisation non-linéaire de θeq = π")
+plt.grid()
+plt.show()
 
 plt.show()
