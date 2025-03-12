@@ -357,48 +357,42 @@ ecrire_valeur("B0",0.01)
 
 ecrire_valeur("N_excit",10000)
 
-nsteps_values = [10]
+ecrire_valeur("theta0",2)
+ecrire_valeur("thetadot0",2)
 
-theta0s = np.linspace(0, 1, 2)  # Plage des valeurs de theta0
-thetadot0s = np.linspace(0, 20, 2)  # Plage des valeurs de thetadot0
+nsteps_values = [100]
 
-# Boucle sur les différentes valeurs de theta0 et thetadot0
-for theta0 in theta0s:
-    for thetadot0 in thetadot0s:
-        ecrire_valeur("theta0", theta0)
-        ecrire_valeur("thetadot0", thetadot0)
+for i, nsteps in enumerate(nsteps_values):
+    couples_phase = []
+    output_file = f"{paramstr}={nsteps}.out"
+    outputs.append(output_file)
+    cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
+    print(cmd)
+    subprocess.run(cmd, shell=True)
+    print('Simulation terminée.')
 
-        couples_phase = []
-        output_file = f"{paramstr}_theta0={theta0}_thetadot0={thetadot0}.out"
-        outputs.append(output_file)
-        cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
-        print(cmd)
-        subprocess.run(cmd, shell=True)
-        print('Simulation terminée.')
+    # Chargement des données
+    data = np.loadtxt(output_file)
+    tfin = data[-1, 0]
+    for k in range(0,len(data[:,1]),nsteps):
+        theta = ((data[k, 1]+np.pi) % (2*np.pi))-np.pi
+        thetadot = data[k, 2]
+        couples_phase.append([theta,thetadot])
 
-        # Chargement des données
-        data = np.loadtxt(output_file)
-        tfin = data[-1, 0]
-        
-        # Récupération des couples (theta, thetadot)
-        for k in range(0, len(data[:, 1])):
-            theta = ((data[k, 1] + np.pi) % (2 * np.pi)) - np.pi  # Pour ajuster theta dans l'intervalle [-pi, pi]
-            thetadot = data[k, 2]
-            couples_phase.append([theta, thetadot])
+    couples_phase = np.array(couples_phase)
+        # Tracé de la section de Poincaré
+    plt.figure()
+    plt.scatter(couples_phase[:,0], couples_phase[:,1], label='Simulation',s = 2)
+    plt.xlabel('$\Theta$ [rad]')
+    plt.ylabel('$\dot{\Theta}$ [rad/s]')
+    plt.legend()
+    plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
+    plt.grid()
 
-        couples_phase = np.array(couples_phase)
 
-        # Tracé de la section de Poincaré sur le même graphique
-        plt.scatter(couples_phase[:, 0], couples_phase[:, 1],s=2)
+plt.show()
 
-# Ajout des labels, titre et grille une seule fois après la boucle
-plt.xlabel('$\\Theta$ [rad]')
-plt.ylabel('$\\dot{\\Theta}$ [rad/s]')
-plt.legend()
-plt.title(f'Sections de Poincaré pour différents $\\theta_0$ et $\\dot{{\\theta}}_0$')
-plt.grid()
-
-'Facultatif:'
+# Question Facultatif:
 	
 ecrire_valeur("theta0",np.pi)
 ecrire_valeur("C", 50)
