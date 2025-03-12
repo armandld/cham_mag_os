@@ -186,7 +186,7 @@ plt.title("Convergence de l'erreur en fonction de Δt")
 
 plt.show()
 
-
+'''
 # Question 2
 
 ecrire_valeur("C",0)
@@ -250,7 +250,7 @@ for i, nsteps in enumerate(nsteps_values):
     plt.grid()
 
     # Comparaison dEmec/dt avec Pnc(t)
-    dEmec_dt = m*L*L*thetadot*np.gradient(thetadot,t)/12-mu*Omega*B1*np.cos(Omega*t)+kappa*np.gradient(thetadot,t)
+    dEmec_dt = m*L*L*thetadot*np.gradient(thetadot,t)/12+mu*B0*np.sin(theta)*thetadot
     plt.figure()
     plt.plot(t, dEmec_dt, label='dE$_{mec}$/dt',color = "black")
     plt.plot(t, Pnc, label='Pnc')
@@ -261,7 +261,7 @@ for i, nsteps in enumerate(nsteps_values):
     plt.grid()
 
 plt.show()
-
+'''
 # Question 3
 
 ecrire_valeur("C",0)
@@ -394,7 +394,7 @@ for i, nsteps in enumerate(nsteps_values):
     data = np.loadtxt(output_file)
     tfin = data[-1, 0]
     for k in range(0,len(data[:,1]),nsteps):
-        theta = ((data[k, 1]+np.pi) % (2*np.pi))-np.pi
+        theta = (data[k, 1] % (2*np.pi))-np.pi
         thetadot = data[k, 2]
         couples_phase.append([theta,thetadot])
 
@@ -409,7 +409,7 @@ for i, nsteps in enumerate(nsteps_values):
     plt.grid()
 plt.show()
 
-'''
+
 # Question Facultatif:
 
 ecrire_valeur("Omega",2*omega_0)
@@ -445,5 +445,5 @@ for i in (nsteps_values):
 	plt.grid()
 	
 plt.show()
-
+'''
 
