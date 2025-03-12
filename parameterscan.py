@@ -15,8 +15,6 @@ CONFIG_FILE = os.path.join(os.path.dirname(__file__), "configuration.in.example"
 
 input_filename = 'configuration.in.example'  # Name of the input file
 
-nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
-
 def lire_configuration():
     config_path = os.path.join(os.path.dirname(__file__), "configuration.in.example")
     configuration = {}
@@ -67,6 +65,8 @@ N_excit = 0.0
 Nperiod = 0.0
 nsteps = 0.0
 
+nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
+
 valeurs = lire_configuration()
 
 def actualise_valeur():
@@ -89,8 +89,9 @@ def ecrire_valeur(nom,valeur):
     global valeurs
     valeurs[nom] = valeur
     ecrire_configuration(valeurs)
+    actualise_valeur()
 
-actualise_valeur()
+
 
 
 # Question 1
@@ -103,8 +104,7 @@ ecrire_valeur("B1",0)
 ecrire_valeur("kappa",0)
 ecrire_valeur("theta0",1e-6)
 ecrire_valeur("thetadot0",0)
-
-actualise_valeur()
+ecrire_valeur("N_excit",0)
 
 outputs = []  # Liste pour stocker les fichiers de sortie
 errors = []  # Liste pour stocker les erreurs
@@ -122,8 +122,8 @@ phi = np.pi/2
 if (thetadot0 != 0):
 	phi = np.arctan(-theta0/thetadot0*omega_0)
 
-# Question 1
 '''
+# Question 1
 
 for i, nsteps in enumerate(param):
     output_file = f"{paramstr}={nsteps}.out"
@@ -167,17 +167,20 @@ plt.ylabel("Erreur δ")
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.legend()
 plt.title("Convergence de l'erreur en fonction de Δt")
-'''
+
 
 # Question 2
 
 ecrire_valeur("Omega",2*omega_0)
-ecrire_valeur("B1",0.02)
+ecrire_valeur("B1",0.002)
+ecrire_valeur("kappa",0)
 ecrire_valeur("N_excit",100)
-
-actualise_valeur()
+ecrire_valeur("theta0",1e-3)
+ecrire_valeur("thetadot0",0)
 
 nsteps_values = [100,500,2000,5000]
+
+errors = []
 
 for i, nsteps in enumerate(nsteps_values):
     output_file = f"{paramstr}={nsteps}.out"
@@ -197,7 +200,7 @@ for i, nsteps in enumerate(nsteps_values):
 
     # Tracé de θ(t)
     plt.figure()
-    plt.plot(t, theta, linestyle='dashed', label='Théorique')
+    plt.plot(t, theta, linestyle='dashed')
     plt.xlabel('Temps [s]')
     plt.ylabel('$\Theta$ [rad]')
     plt.legend()
@@ -263,5 +266,97 @@ plt.ylabel("Erreur δ")
 plt.grid(True, linestyle="--", alpha=0.3)
 plt.legend()
 plt.title("Convergence de l'erreur en fonction de Δt")
+
+
+# Question 3
+
+ecrire_valeur("Omega",2*omega_0)
+ecrire_valeur("B1",0.002)
+ecrire_valeur("kappa",0)
+ecrire_valeur("N_excit",10000)
+ecrire_valeur("theta0",1e-3)
+ecrire_valeur("thetadot0",0)
+
+nsteps_values = [10,20,50,100]
+
+
+for i, nsteps in enumerate(nsteps_values):
+    couples_phase = []
+    output_file = f"{paramstr}={nsteps}.out"
+    outputs.append(output_file)
+    cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
+    print(cmd)
+    subprocess.run(cmd, shell=True)
+    print('Simulation terminée.')
+
+    # Chargement des données
+    data = np.loadtxt(output_file)
+    tfin = data[-1, 0]
+    for k in range(0,len(data[:,1]),nsteps):
+        k = int(k)
+        theta = ((data[k, 1]+np.pi) % (2*np.pi))-np.pi
+        thetadot = data[k, 2]
+        couples_phase.append([theta,thetadot])
+
+    couples_phase = np.array(couples_phase)
+        # Tracé de la section de Poincaré
+    plt.figure()
+    plt.scatter(couples_phase[:,0], couples_phase[:,1], label='Simulation',s = 2)
+    plt.xlabel('$\Theta$ [rad]')
+    plt.ylabel('$\dot{\Theta}$ [rad/s]')
+    plt.legend()
+    plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
+    plt.grid()
+
+'''
+# Question 5
+
+ecrire_valeur("Omega",2*omega_0)
+ecrire_valeur("B1",0.018)
+ecrire_valeur("kappa",2e-5)
+ecrire_valeur("B0",0.01)
+
+ecrire_valeur("N_excit",10000)
+
+nsteps_values = [10]
+
+theta0s = np.linspace(0, 1, 2)  # Plage des valeurs de theta0
+thetadot0s = np.linspace(0, 20, 2)  # Plage des valeurs de thetadot0
+
+# Boucle sur les différentes valeurs de theta0 et thetadot0
+for theta0 in theta0s:
+    for thetadot0 in thetadot0s:
+        ecrire_valeur("theta0", theta0)
+        ecrire_valeur("thetadot0", thetadot0)
+
+        couples_phase = []
+        output_file = f"{paramstr}_theta0={theta0}_thetadot0={thetadot0}.out"
+        outputs.append(output_file)
+        cmd = f"./{executable} {input_filename} {paramstr}={nsteps} output={output_file}"
+        print(cmd)
+        subprocess.run(cmd, shell=True)
+        print('Simulation terminée.')
+
+        # Chargement des données
+        data = np.loadtxt(output_file)
+        tfin = data[-1, 0]
+        
+        # Récupération des couples (theta, thetadot)
+        for k in range(0, len(data[:, 1])):
+            theta = ((data[k, 1] + np.pi) % (2 * np.pi)) - np.pi  # Pour ajuster theta dans l'intervalle [-pi, pi]
+            thetadot = data[k, 2]
+            couples_phase.append([theta, thetadot])
+
+        couples_phase = np.array(couples_phase)
+
+        # Tracé de la section de Poincaré sur le même graphique
+        plt.scatter(couples_phase[:, 0], couples_phase[:, 1],s=2)
+
+# Ajout des labels, titre et grille une seule fois après la boucle
+plt.xlabel('$\\Theta$ [rad]')
+plt.ylabel('$\\dot{\\Theta}$ [rad/s]')
+plt.legend()
+plt.title(f'Sections de Poincaré pour différents $\\theta_0$ et $\\dot{{\\theta}}_0$')
+plt.grid()
 
 plt.show()
