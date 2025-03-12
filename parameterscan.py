@@ -67,6 +67,7 @@ nsteps = 0.0
 C = 0.0
 alpha = 0.0
 beta = 0.0
+gamma = 0.0
 
 nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de pas par période
 
@@ -90,7 +91,7 @@ def actualise_valeur():
     C = float(valeurs.get("C"))
     alpha = float(valeurs.get("alpha"))
     beta = float(valeurs.get("beta"))
-
+    gamma = float(valeurs.get("gamma"))
 
 def ecrire_valeur(nom,valeur):
     global valeurs
@@ -131,7 +132,13 @@ if (thetadot0 != 0):
 
 
 
+
+
+
 '''
+ecrire_valeur("C",0)
+ecrire_valeur("alpha",0)
+ecrire_valeur("beta",0)
 # Question 1
 
 for i, nsteps in enumerate(param):
@@ -181,6 +188,10 @@ plt.show()
 
 
 # Question 2
+
+ecrire_valeur("C",0)
+ecrire_valeur("alpha",0)
+ecrire_valeur("beta",0)
 
 ecrire_valeur("Omega",2*omega_0)
 ecrire_valeur("B1",0.002)
@@ -253,6 +264,10 @@ plt.show()
 
 # Question 3
 
+ecrire_valeur("C",0)
+ecrire_valeur("alpha",0)
+ecrire_valeur("beta",0)
+
 ecrire_valeur("Omega",2*omega_0)
 ecrire_valeur("B1",0.002)
 ecrire_valeur("kappa",0)
@@ -302,6 +317,10 @@ plt.show()
 
 # Question 4
 
+ecrire_valeur("C",0)
+ecrire_valeur("alpha",0)
+ecrire_valeur("beta",0)
+
 ecrire_valeur("Omega",2*omega_0)
 ecrire_valeur("B1",0.002)
 ecrire_valeur("kappa",0)
@@ -345,6 +364,10 @@ for thetadot in thetadot0s:
 plt.show()
 
 # Question 5
+
+ecrire_valeur("C",0)
+ecrire_valeur("alpha",0)
+ecrire_valeur("beta",0)
 
 ecrire_valeur("Omega",2*omega_0)
 ecrire_valeur("B1",0.018)
@@ -402,6 +425,7 @@ ecrire_valeur("thetadot0",0)
 ecrire_valeur("C", 50)
 ecrire_valeur("alpha",0) #'Tres bonne stabilisation à e-12 de précision'
 ecrire_valeur("beta", 0)
+ecrire_valeur("gamma", 0)
 
 nsteps_values = [10,20,50,100]  # Nombre de pas par période
 
