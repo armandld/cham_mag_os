@@ -17,7 +17,7 @@ private:
   double B0, B1;
   double mu;
   double om_0, om_1, nu, Ig;
-  double C,alpha,beta; 		//PARTIE FACULTATIVE stabilisation autour de pi
+  double C,alpha,beta,gamma; 		//PARTIE FACULTATIVE stabilisation autour de pi
 
   int N_excit, nsteps_per, Nperiod;
   int sampling;
@@ -101,6 +101,7 @@ public:
     C        = configFile.get<int>("C"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
     alpha    = configFile.get<int>("alpha"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
     beta     = configFile.get<int>("beta"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
+    gamma     = configFile.get<int>("gamma"); 		// PARTIE FACULTATIVE Stabilisation autour de pi
 
     // Ouverture du fichier de sortie
     outputFile = new ofstream(configFile.get<string>("output").c_str());
