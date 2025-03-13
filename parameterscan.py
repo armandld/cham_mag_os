@@ -74,7 +74,7 @@ nsteps_values = [50, 100, 200, 500, 700, 1000, 2000, 5000, 10000]  # Nombre de p
 valeurs = lire_configuration()
 
 def actualise_valeur():
-    global Omega, kappa, m, L, B1, B0, mu, theta0, thetadot0, sampling, N_excit, Nperiod, nsteps, C, alpha, beta
+    global Omega, kappa, m, L, B1, B0, mu, theta0, thetadot0, sampling, N_excit, Nperiod, nsteps, C, alpha, beta, gamma
     Omega = float(valeurs.get("Omega"))
     kappa = float(valeurs.get("kappa"))
     m = float(valeurs.get("m"))
