@@ -186,7 +186,7 @@ plt.title("Convergence de l'erreur en fonction de Δt")
 
 plt.show()
 
-'''
+
 # Question 2
 
 ecrire_valeur("C",0)
@@ -253,7 +253,7 @@ for i, nsteps in enumerate(nsteps_values):
     dEmec_dt = m*L*L*thetadot*np.gradient(thetadot,t)/12+mu*B0*np.sin(theta)*thetadot
     plt.figure()
     plt.plot(t, dEmec_dt, label='dE$_{mec}$/dt',color = "black")
-    plt.plot(t, Pnc, label='Pnc')
+    plt.plot(t, Pnc,linestyle = "-.", label='Pnc',color = "purple")
     plt.xlabel('Temps [s]')
     plt.ylabel('Puissance [W]')
     plt.legend()
@@ -261,7 +261,7 @@ for i, nsteps in enumerate(nsteps_values):
     plt.grid()
 
 plt.show()
-'''
+
 # Question 3
 
 ecrire_valeur("C",0)
@@ -275,8 +275,8 @@ ecrire_valeur("N_excit",10000)
 
 nsteps_values = [10]
 
-theta0s = [0,1e-3,1e-1,0.5,1]
-thetadot0s = np.linspace(0,25,6)
+theta0s = [-2,0,1e-3,1e-1,0.5,1]
+thetadot0s = np.linspace(0,20,5)
 
 plt.figure()
 for theta in theta0s:
@@ -304,7 +304,7 @@ for theta in theta0s:
             couples_phase = np.array(couples_phase)
         # Tracé de la section de Poincaré
 
-        plt.scatter(couples_phase[:,0], couples_phase[:,1],s = 0.5)
+        plt.scatter(couples_phase[:,0], couples_phase[:,1],s = 0.1)
 
 plt.xlabel('$\Theta$ [rad]')
 plt.ylabel('$\dot{\Theta}$ [rad/s]')
@@ -313,7 +313,6 @@ plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
 plt.grid()
 
 plt.show()
-
 
 # Question 4
 
@@ -334,7 +333,7 @@ ecrire_valeur("N_excit",100)
 
 ecrire_valeur("theta0",1)
 thetadot0s = [5,15] # 5 pas chaotique et 15 chaotique
-
+plt.figure()
 for thetadot in thetadot0s:
     ecrire_valeur("thetadot0",thetadot) 
 
@@ -351,18 +350,18 @@ for thetadot in thetadot0s:
     thetadot_b = data_b[:, 2]
 
     # Calcul de la distance delta_ab
-    delta_ab = np.sqrt(omega_0**2 * (theta_b - theta_a)**2 + (thetadot_b - thetadot_a)**2)
-
+    delta_ab = np.sqrt(omega_0**2 * (((theta_b - theta_a)+np.pi)%(2*np.pi)-np.pi)**2 + (thetadot_b - thetadot_a)**2)
+    
     # Tracé des résultats
-    plt.figure()
-    plt.plot(t, delta_ab,color = "black")
+    plt.plot(t, delta_ab)
     plt.xlabel("Temps [s]")
-    plt.ylabel("Distance δab")
+    plt.ylabel("Distance $\\delta_{{ab}}$")
     plt.title("Évolution de la distance entre trajectoires d'angles proches")
     plt.grid()
 
 plt.show()
 
+'''
 # Question 5
 
 ecrire_valeur("C",0)
@@ -376,8 +375,8 @@ ecrire_valeur("B0",0.01)
 
 ecrire_valeur("N_excit",10000)
 
-ecrire_valeur("theta0",-1)
-ecrire_valeur("thetadot0",-8)
+ecrire_valeur("theta0",0)
+ecrire_valeur("thetadot0",-2)
 
 nsteps_values = [100]
 
@@ -394,7 +393,7 @@ for i, nsteps in enumerate(nsteps_values):
     data = np.loadtxt(output_file)
     tfin = data[-1, 0]
     for k in range(0,len(data[:,1]),nsteps):
-        theta = (data[k, 1] % (2*np.pi))-np.pi
+        theta = (data[k, 1]% (2*np.pi))-np.pi
         thetadot = data[k, 2]
         couples_phase.append([theta,thetadot])
 
@@ -407,9 +406,10 @@ for i, nsteps in enumerate(nsteps_values):
     plt.legend()
     plt.title(f'Sections de Poincaré pour nsteps ={nsteps}')
     plt.grid()
+
 plt.show()
 
-
+'''
 # Question Facultatif:
 
 ecrire_valeur("Omega",2*omega_0)
@@ -422,7 +422,7 @@ ecrire_valeur("nsteps",50)
 ecrire_valeur("theta0", np.pi)
 ecrire_valeur("thetadot0",0)
 
-ecrire_valeur("C", 50)
+ecrire_valeur("C", 0)
 ecrire_valeur("alpha",0) #'Tres bonne stabilisation à e-12 de précision'
 ecrire_valeur("beta", 0)
 ecrire_valeur("gamma", 0)
@@ -446,4 +446,3 @@ for i in (nsteps_values):
 	
 plt.show()
 '''
-

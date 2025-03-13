@@ -30,7 +30,7 @@ private:
     {
 	  Ig = m*L*L/12.0;
       double emec = Ig*thetadot*thetadot/2.0-mu*(B0-B1*sin(Omega*t)+kappa*thetadot); // TODO: Evaluer l'energie mecanique
-      double pnc  = mu*B1*sin(Omega*t)*sin(theta)*thetadot-kappa*pow(thetadot,2); // TODO: Evaluer la puissance des forces non conservatives
+      double pnc  = -mu*B1*sin(Omega*t)*sin(theta)*thetadot-kappa*pow(thetadot,2); // TODO: Evaluer la puissance des forces non conservatives
 
       *outputFile << t << " " << theta << " " << thetadot << " " << emec << " " << pnc << endl;
       last = 1;
