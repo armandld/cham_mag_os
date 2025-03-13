@@ -375,8 +375,8 @@ ecrire_valeur("B0",0.01)
 
 ecrire_valeur("N_excit",10000)
 
-ecrire_valeur("theta0",0)
-ecrire_valeur("thetadot0",-2)
+ecrire_valeur("theta0",-2)
+ecrire_valeur("thetadot0",50)
 
 nsteps_values = [100]
 
@@ -422,12 +422,12 @@ ecrire_valeur("nsteps",50)
 ecrire_valeur("theta0", np.pi)
 ecrire_valeur("thetadot0",0)
 
-ecrire_valeur("C", 0)
+ecrire_valeur("C", 50)
 ecrire_valeur("alpha",0) #'Tres bonne stabilisation à e-12 de précision'
 ecrire_valeur("beta", 0)
 ecrire_valeur("gamma", 0)
 
-nsteps_values = [10,20,50,100]  # Nombre de pas par période
+nsteps_values = [50]  # Nombre de pas par période
 
 for i in (nsteps_values):
 	ecrire_valeur("theta0",np.pi)
