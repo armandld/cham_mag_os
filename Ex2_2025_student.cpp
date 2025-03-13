@@ -47,7 +47,7 @@ private:
   {
     valarray<double> acc = valarray<double>(2);
 
-    acc[0] = -mu*sin(theta)*(B0+B1*sin(Omega*t))/Ig-C*(theta-M_PI)+alpha*cos(beta*t); // angular acceleration depending on x and t only, bonus part added
+    acc[0] = -mu*sin(theta)*(B0+B1*sin(Omega*t))/Ig-C*(theta-M_PI)+alpha*cos(beta*t+gamma); // angular acceleration depending on x and t only, bonus part added
     acc[1] = -kappa*thetadot/Ig; // angular acceleration depending on v only
 
     return acc;
