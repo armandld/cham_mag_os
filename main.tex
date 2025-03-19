@@ -60,7 +60,7 @@
 \begin{document}
 
 % Le titre, l'auteur et la date
-\title{Physique numérique Exercice 1}
+\title{Physique numérique Exercice 2}
 \author{Armand Le Douarec, Maxime Chatelin\\  % \\ pour fin de ligne
 {\small \mail{armand.ledouarec@epfl.ch}, \mail{maxime.chatelin@epfl.ch}}}
 \date{\today}\maketitle
@@ -178,7 +178,8 @@ Si l'on ne se trouve pas dans l'un de ces deux cas, on a :
     \right.
     \quad\Rightarrow\quad
     \left\{ \begin{tabular}{c}
-      $\phi=\displaystyle\arctan\left(-\frac{\theta_0}{\dot{\theta}_0}\right)$     \\
+      $\phi=\displaystyle\arctan\left(-\frac{\omega_0 
+ \theta_0}{\dot{\theta}_0}\right)$     \\
       $A = \displaystyle\sqrt{\theta_0^2 + \left(\frac{\dot{\theta}_0}{\omega_0}\right)^2}$
     \end{tabular}
     \right.
@@ -264,21 +265,18 @@ Dans le cas suivant, on ajoute à l'aiguille une excitation paramétrique. On d�
 
 \begin{figure}[H]
     \centering
-    \begin{minipage}{0.47\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{graphes/question_2_E_mec_manquant.png}
-        \captionsetup{justification=centering}
-        \caption{Trace temporelle de $E_{mec}$.}
-        \label{fig4}
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.47\textwidth}
-        \centering
-        \includegraphics[width=\linewidth]{graphes/question_2_E_mec.png}
-        \captionsetup{justification=centering}
-        \caption{Comparaison de $dE_{mec}/dt$ et $P_{nc}$ au cours du temps.}
-        \label{fig5}
-    \end{minipage}
+    \includegraphics[width=0.55\textwidth]{graphes/question_2_E_mec_manquant.png}
+    \captionsetup{justification=centering}
+    \caption{Trace temporelle de $E_{mec}$.}
+    \label{fig4}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{graphes/question_2_E_mec.png}
+    \captionsetup{justification=centering}
+    \caption{Comparaison de $dE_{mec}/dt$ et $P_{nc}$ au cours du temps.}
+    \label{fig5}
 \end{figure}
 
 Le choix $\Omega = 2 \cdot \omega_0$ induit une résonance paramétrique, permettant un transfert d’énergie efficace vers l’oscillation de l’aiguille. Cette perturbation a lieu aux alentours de $t=20$\,s. Cela entraîne une augmentation de l’énergie mécanique puis un retour à l'état initial et un changement dans $P_{nc}$ ou $dE_{mec}/dt$, qui sont égales, ce qui est en accord avec la théorie. L'élargissement des orbites du portrait de phase illustre l’injection régulière d’énergie par l’excitation paramétrique. Mais $B_1$ étant assez faible, le système ne devient pas chaotique, reste borné comme l'indique le portrait de phase. L'élargissement des orbites du portrait de phase illustre l’induction régulière d’énergie par l’excitation paramétrique. Le portrait de phase montre que l’aiguille part de son point d’équilibre (0,\,0), puis s’en écarte sous l’effet de l’excitation, traçant des orbites elliptiques caractéristiques d’un mouvement sinusoïdal de l’angle $\theta$. Enfin, après excitation, la particule converge de nouveau vers son point d’équilibre.
@@ -345,6 +343,8 @@ Cette partie reprend les mêmes paramètres que les deux questions précédentes
 \end{figure}
 
 
+En premier lieu, la distance entre les deux simulations dépend de la différence entre les angles $\theta_a$ et $\theta_b$. En conséquence, la différence d'angle est calculée modulo $2\pi$ ce qui génère les oscillations de la distance $\delta_{ab}$ dans le cas chaotique, visible sur la Fig.(\ref{fig7a}).
+
 Dans le cas non chaotique, la distance entre les deux situations "quasi-jumelles" est très faible par rapport au cas chaotique. En effet, dans un cas stable, à partir de la position de l'aiguille connue d'une des deux simulations, il est possible d'approximer correctement la position de l'aiguille dans l'autre simulation. Le zoom sur le cas non chaotique montre que $\delta _{ab}(t)$ suit bien un comportement solution de l'équation différentielle. Elle est la somme d'une composante linéaire d'ordre 1 $\alpha\,t$ et d'une somme de sinusoïdales ayant différentes fréquences. Ici, c'est la valeur absolue des sinusoïdales qui a été implémentée. Dans le cas chaotique, un terme exponentiel $e^{\lambda t}$, avec le coefficient chaotique $\lambda$ de Lyapunov, s'ajoute pour décrire le comportement de la distance $\delta _{ab}(t)$. Le coefficient de Lyapunov mesure la sensibilité aux conditions initiales. Sa positivité est une caractéristique du mouvement chaotique et décrit ainsi une divergence exponentielle.Par conséquent, $\delta _{ab}(t)$ diverge de manière exponentielle  avant d'osciller fortement autour d'une valeur limite représentant sa valeur de saturation. Cette saturation est une conséquence de l'énergie du système qui n'est pas infinie, la distance $\delta _{ab}(t)$ est ainsi bornée, c'est la borne énergétique du système. Cependant, malgré la valeur de saturation, le mouvement de la deuxième simulation est imprédictible à partir des données de la première après la divergence exponentielle de $\delta _{ab}(t)$ car l'amplitude oscillation et sa pulsation sont de l'ordre respectivement de dizaines de radians et de plusieurs radians par seconde. Malgré la faible différence des conditions initiales, la divergence des comportements de l'aiguille se constate rapidement, dès la dixième seconde de la simulation qui représente ici la limite de prédictibilité. À partir des positions d'une des deux simulations, trouver une approximation de la position de l'autre simulation n'est pas possible.
 
 \subsection{Chaos, attracteurs étranges. Cas avec amortissement}
@@ -408,3 +408,4 @@ Après différentes expériences, le meilleur stabilisateur s'avère être la fo
 Dans cette étude, nous avons analysé le comportement dynamique d’une aiguille aimantée soumise à un champ magnétique oscillant en combinant modélisation mathématique et simulations numériques en C++. Nos résultats ont révélé une grande diversité de régimes dynamiques, allant d’un alignement stationnaire aux oscillations périodiques, jusqu’à des comportements plus complexes comme l’excitation paramétrique et le chaos, mis en évidence par les sections de Poincaré et les exposants de Lyapunov. Ces phénomènes illustrent la richesse des systèmes non linéaires et trouvent des analogies avec des modèles classiques comme le pendule paramétrique ou le système de Duffing. Au-delà du cas spécifique étudié, ce travail met en lumière les subtilités des interactions entre excitation externe et réponse dynamique, soulignant l’importance des méthodes numériques et analytiques pour appréhender ces phénomènes et ouvrant la voie à de nouvelles investigations en physique fondamentale et appliquée.
 
 \end{document} %%%% THE END %%%%
+
